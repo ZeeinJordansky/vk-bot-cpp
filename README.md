@@ -1,23 +1,13 @@
-# VK Bot на C++
+# VK Игровой Бот (Node.js + Web Panel)
 
-Простой VK бот с использованием Bots Long Poll API.
-
-## Сборка
-
+## Установка
 ```bash
-mkdir build && cd build
-cmake ..
-make
+npm install
+cp .env.example .env
+# заполни VK_TOKEN
+npm start
 ```
 
-## Настройка
+Панель управления: http://localhost:3000
 
-1. Создайте сообщество в VK.
-2. Получите access token с правами messages.
-3. Укажите group_id и token в main.cpp.
-
-## Запуск
-
-```bash
-./vk-bot
-```
+Игра: 'игра'

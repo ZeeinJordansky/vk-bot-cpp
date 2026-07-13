@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VK Игровой Бот - Панель</title>
+  <style>
+    body { font-family: Arial; margin: 20px; background: #1e1e1e; color: #fff; }
+    .panel { max-width: 800px; margin: auto; }
+    button { padding: 10px 20px; margin: 5px; }
+    #logs { height: 400px; overflow-y: scroll; background: #111; padding: 10px; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>🎮 VK Игровой Бот</h1>
+    <p>Статус: <span id="status">Работает</span></p>
+    <button onclick="toggleBot()">⏹️ Остановить / Запустить</button>
+    <button onclick="sendMessage()">Отправить сообщение</button>
+
+    <h2>Статистика</h2>
+    <p>Сообщений: <span id="messages">0</span></p>
+    <p>Игр сыграно: <span id="games">0</span></p>
+
+    <h2>Логи</h2>
+    <div id="logs"></div>
+  </div>
+
+  <script>
+    const ws = new WebSocket('ws://' + location.host);
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'log') {
+        document.getElementById('logs').innerHTML += data.data + '<br>';
+      } else if (data.type === 'stats') {
+        document.getElementById('messages').textContent = data.data.messages;
+        document.getElementById('games').textContent = data.data.gamesPlayed;
+      }
+    };
+
+    function toggleBot() {
+      fetch('/api/toggle', { method: 'POST' }).then(r => r.json()).then(console.log);
+    }
+
+    function sendMessage() {
+      const peer = prompt('Peer ID:');
+      const msg = prompt('Сообщение:');
+      if (peer && msg) fetch('/api/send', { method: 'POST', body: JSON.stringify({peer, msg}) });
+    }
+
+    // Обновление статистики
+    setInterval(() => {
+      fetch('/api/stats').then(r => r.json()).then(data => {
+        document.getElementById('messages').textContent = data.messages;
+        document.getElementById('games').textContent = data.gamesPlayed;
+      });
+    }, 2000);
+  </script>
+</body>
+</html>
